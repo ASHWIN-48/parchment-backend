@@ -7,7 +7,19 @@ import os
 import torch
 import numpy as np
 
-cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+_cross_encoder = None
+
+def get_cross_encoder():
+    global _cross_encoder
+
+    if _cross_encoder is None:
+        from sentence_transformers import CrossEncoder
+
+        _cross_encoder = CrossEncoder(
+            "cross-encoder/ms-marco-MiniLM-L-6-v2"
+        )
+
+    return _cross_encoder
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 class RetrievalService:
@@ -30,7 +42,7 @@ class RetrievalService:
     
     def rerank(self, query: str, chunks: list[dict]) -> list[dict]:
         pairs = [[query, chunk["text"]] for chunk in chunks]
-        scores = cross_encoder.predict(pairs)
+        scores = _cross_encoder.predict(pairs)
         
         # normalize logits to 0-1 using sigmoid
         scores = 1 / (1 + np.exp(-scores))
