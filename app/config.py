@@ -16,7 +16,7 @@ RERANKER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 TOP_K = 5
 RERANK_TOP_K = 3
 MIN_SIMILARITY = 0.45
-MIN_CONFIDENCE = 0.15
+MIN_CONFIDENCE = 0.10
 
 # Paths
 BASE_DIR = Path(__file__).resolve().parent.parent  # points to backend/
