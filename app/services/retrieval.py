@@ -7,19 +7,19 @@ import os
 import torch
 import numpy as np
 
-_cross_encoder = None
+# _cross_encoder = None
 
-def get_cross_encoder():
-    global _cross_encoder
+# def get_cross_encoder():
+#     global _cross_encoder
 
-    if _cross_encoder is None:
-        from sentence_transformers import CrossEncoder
+#     if _cross_encoder is None:
+#         from sentence_transformers import CrossEncoder
 
-        _cross_encoder = CrossEncoder(
-            "cross-encoder/ms-marco-MiniLM-L-6-v2"
-        )
+#         _cross_encoder = CrossEncoder(
+#             "cross-encoder/ms-marco-MiniLM-L-6-v2"
+#         )
 
-    return _cross_encoder
+#     return _cross_encoder
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 class RetrievalService:
@@ -40,14 +40,9 @@ class RetrievalService:
         return chunks
     
     def rerank(self, query: str, chunks: list[dict]) -> list[dict]:
-        pairs = [[query, chunk["text"]] for chunk in chunks]
-        scores = get_cross_encoder.predict(pairs)
-        
-        # normalize logits to 0-1 using sigmoid
-        scores = 1 / (1 + np.exp(-scores))
-        
-        ranked = sorted(zip(scores, chunks), key=lambda x: x[0], reverse=True)
-        return [{"score": float(s), **c} for s, c in ranked]
+        # Cross-encoder disabled for free tier deployment (RAM constraint)
+        # Returns chunks with placeholder scores, ordered by FAISS similarity
+        return [{"score": 0.75, **c} for c in chunks]
 
     def get_answer(self, query: str) -> dict:
         try:
