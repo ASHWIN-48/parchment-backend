@@ -27,32 +27,40 @@ def build_faiss_index(embeddings: np.ndarray) -> faiss.Index:
 
 
 def save_index(index: faiss.Index, chunk_ids: list[str]):
-    # serialize to bytes
-    buf = io.BytesIO()
-    faiss.write_index(index, faiss.PyCallbackIOWriter(buf.write))
-    index_bytes = buf.getvalue()
+    # write to temp file, read bytes, store in MongoDB
+    import tempfile, os
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".bin") as tmp:
+        tmp_path = tmp.name
+    
+    faiss.write_index(index, tmp_path)
+    
+    with open(tmp_path, "rb") as f:
+        index_bytes = f.read()
+    
+    os.unlink(tmp_path)
     chunk_ids_bytes = pickle.dumps(chunk_ids)
     
     db = get_db()
     db["faiss_store"].replace_one(
         {"_id": "main"},
-        {
-            "_id": "main",
-            "index_bytes": index_bytes,
-            "chunk_ids_bytes": chunk_ids_bytes
-        },
+        {"_id": "main", "index_bytes": index_bytes, "chunk_ids_bytes": chunk_ids_bytes},
         upsert=True
     )
 
 def load_index() -> tuple[faiss.Index, list[str]]:
+    import tempfile, os
     db = get_db()
     doc = db["faiss_store"].find_one({"_id": "main"})
     
     if not doc:
         raise RuntimeError("No FAISS index found. Upload a document first.")
     
-    buf = io.BytesIO(doc["index_bytes"])
-    index = faiss.read_index(faiss.PyCallbackIOReader(buf.read))
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".bin") as tmp:
+        tmp.write(doc["index_bytes"])
+        tmp_path = tmp.name
+    
+    index = faiss.read_index(tmp_path)
+    os.unlink(tmp_path)
     chunk_ids = pickle.loads(doc["chunk_ids_bytes"])
     
     return index, chunk_ids
