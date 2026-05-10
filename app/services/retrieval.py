@@ -27,11 +27,7 @@ class RetrievalService:
         self.chunk_repo = ChunkRepository(db)
 
     def retrieve(self, query: str, top_k: int = 5) -> list[dict]:
-        from app.config import FAISS_INDEX_PATH
-        
-        if not FAISS_INDEX_PATH.exists():
-            return []
-        
+    
         query_vec = embed_texts([query])
         index, chunk_ids = load_index()
         distances, indices = index.search(query_vec, top_k)
