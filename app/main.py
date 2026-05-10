@@ -19,10 +19,7 @@ app = FastAPI(title="RAG Document QA")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://parchment-ashwin-sharma-s-projects.vercel.app"
-    ],
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
