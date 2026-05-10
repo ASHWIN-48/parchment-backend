@@ -41,7 +41,7 @@ class RetrievalService:
     
     def rerank(self, query: str, chunks: list[dict]) -> list[dict]:
         pairs = [[query, chunk["text"]] for chunk in chunks]
-        scores = _cross_encoder.predict(pairs)
+        scores = get_cross_encoder.predict(pairs)
         
         # normalize logits to 0-1 using sigmoid
         scores = 1 / (1 + np.exp(-scores))
