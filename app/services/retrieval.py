@@ -27,17 +27,16 @@ class RetrievalService:
         self.chunk_repo = ChunkRepository(db)
 
     def retrieve(self, query: str, top_k: int = 5) -> list[dict]:
-        # Step 1 - embed query
+        from app.config import FAISS_INDEX_PATH
+        
+        if not FAISS_INDEX_PATH.exists():
+            return []
+        
         query_vec = embed_texts([query])
-
-        # Step 2 - FAISS search
         index, chunk_ids = load_index()
         distances, indices = index.search(query_vec, top_k)
-
-        # Step 3 - fetch chunks from MongoDB
         retrieved_ids = [chunk_ids[i] for i in indices[0] if i < len(chunk_ids)]
         chunks = self.chunk_repo.get_by_ids(retrieved_ids)
-
         return chunks
     
     def rerank(self, query: str, chunks: list[dict]) -> list[dict]:
@@ -51,8 +50,16 @@ class RetrievalService:
         return [{"score": float(s), **c} for s, c in ranked]
 
     def get_answer(self, query: str) -> dict:
-        # Retrieve + rerank
-        chunks = self.retrieve(query)
+        try:
+            chunks = self.retrieve(query)
+        except RuntimeError as e:
+            return {
+                "answer": str(e),
+                "sources": [],
+                "confidence": 0.0,
+                "tokens_used": 0
+            }
+        
         ranked_chunks = self.rerank(query, chunks)
 
         # Confidence check

@@ -3,6 +3,17 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import upload, ask, documents
+from contextlib import asynccontextmanager
+from app.services.embedding import get_model
+
+@asynccontextmanager
+async def lifespan(app):
+    # pre-load model in background on startup
+    import threading
+    threading.Thread(target=get_model, daemon=True).start()
+    yield
+
+app = FastAPI(title="RAG Document QA", lifespan=lifespan)
 
 app = FastAPI(title="RAG Document QA")
 
