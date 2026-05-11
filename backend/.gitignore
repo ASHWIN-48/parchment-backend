@@ -5,3 +5,4 @@ indices/
 uploads/
 *.bin
 *.pkl
+frontend/.env
