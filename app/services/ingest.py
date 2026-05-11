@@ -21,12 +21,13 @@ class IngestService:
         self.chunk_repo = ChunkRepository(db)
         self.doc_repo = DocumentRepository(db)
 
-    def ingest(self, filename: str, file_bytes: bytes, chunk_size: int = 500, overlap: int = 50) -> dict:
+    def ingest(self, filename: str, file_bytes: bytes,session_id: str = "default", chunk_size: int = 500, overlap: int = 50) -> dict:
         # Step 1 - save document as processing
         doc_id = self.doc_repo.insert_one({
             "filename": filename,
             "status": "processing",
             "chunk_count": 0,
+            "session_id": session_id or "default",
             "created_at": datetime.now(timezone.utc),
             "updated_at": datetime.now(timezone.utc)
         })

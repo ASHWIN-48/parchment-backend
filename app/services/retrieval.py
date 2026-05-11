@@ -85,7 +85,8 @@ class RetrievalService:
             - If the document defines something, give the definition first, then elaborate
             - Keep answers concise but complete — no padding
             - If context is insufficient, say exactly what's missing
-            - Never say "based on the context" or "the document states" — just answer"""
+            - Never say "based on the context" or "the document states" — just answer
+            -- When explaining technical concepts, always give: definition → how it works → example"""
                 },
                 {   
                     "role": "user",

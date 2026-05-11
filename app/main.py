@@ -15,8 +15,6 @@ async def lifespan(app):
 
 app = FastAPI(title="RAG Document QA", lifespan=lifespan)
 
-app = FastAPI(title="RAG Document QA")
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

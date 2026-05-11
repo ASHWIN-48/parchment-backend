@@ -25,3 +25,6 @@ class DocumentRepository:
     def delete_by_id(self, document_id: str) -> bool:
         result = self.collection.delete_one({"_id": ObjectId(document_id)})
         return result.deleted_count > 0
+    
+    def get_by_session(self, session_id: str) -> list[dict]:
+        return list(self.collection.find({"session_id": session_id}))
