@@ -50,3 +50,21 @@ export async function getDocuments(sessionId) {
 
   return response.json();
 }
+
+export async function deleteDocument(documentId, sessionId) {
+  const response = await fetch(
+    `${API_BASE}/documents/${documentId}`,
+    {
+      method: "DELETE",
+      headers: {
+        session_id: sessionId,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to delete document");
+  }
+
+  return response.json();
+}
