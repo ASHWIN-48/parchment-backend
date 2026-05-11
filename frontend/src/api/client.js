@@ -2,7 +2,7 @@ const API_BASE = (
   import.meta.env.VITE_API_URL || "http://localhost:8000"
 ).replace(/\/$/, "");
 
-export async function uploadDocument(file, sessionId) {
+export async function uploadPDF(file, sessionId) {
   const formData = new FormData();
   formData.append("file", file);
 
