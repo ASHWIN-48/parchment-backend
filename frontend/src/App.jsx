@@ -786,7 +786,7 @@ export default function App() {
     if (taRef.current) taRef.current.style.height = "auto";
     setHist(h => [...h, { role: "user", text: query }]);
     try {
-      const res = await askQuestion(query);
+      const res = await askQuestion(query, getSessionId())
       setHist(h => [...h, { role: "assistant", data: res }]);
     } catch {
       setHist(h => [...h, {

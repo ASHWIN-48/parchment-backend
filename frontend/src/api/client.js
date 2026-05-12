@@ -21,11 +21,12 @@ export async function uploadPDF(file, sessionId) {
   return response.json();
 }
 
-export async function askQuestion(question) {
+export async function askQuestion(question, sessionId) {
   const response = await fetch(`${API_BASE}/ask`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      session_id: sessionId,
     },
     body: JSON.stringify({ question }),
   });
