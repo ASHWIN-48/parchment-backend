@@ -382,13 +382,14 @@ function DocRow({ doc, active, onClick, onDel }) {
    Chips fire REAL queries instantly
 ═══════════════════════════════════════════ */
 const CHIPS = [
-  "Give me an executive summary",
-  "What are the core arguments?",
-  "List every definition given",
-  "What conclusions are drawn?",
-  "Identify key data and figures",
-  "Explain the main methodology",
+  "Type the definition you want explained",
+  "Ask about a specific keyword or concept",
+  "Mention the exact topic you want to understand",
+  "Ask about a technical term from the document",
+  "Type a concept name to get an explanation",
+  "Ask questions using important words from the PDF"
 ];
+
 
 function Masthead({ docName, onAsk }) {
   /* animated rule line */
@@ -482,7 +483,7 @@ function Masthead({ docName, onAsk }) {
         color: "var(--muted)", letterSpacing: "3px",
         marginBottom: 14, alignSelf: "flex-start",
         maxWidth: 560, width: "100%",
-      }}>SUGGESTED QUERIES</div>
+      }}>HOW TO ASK</div>
 
       {/* Chips — each fires a real query */}
       <div style={{
@@ -490,20 +491,14 @@ function Masthead({ docName, onAsk }) {
         maxWidth: 560, width: "100%",
       }}>
         {CHIPS.map((c, i) => (
-          <motion.button
+          <motion.div
             key={c}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12 + i * 0.05, duration: 0.35 }}
-            whileHover={{
-              background: "rgba(200,169,110,0.12)",
-              borderColor: "rgba(220,190,120,0.55)",
-              color: "rgba(240,234,214,0.8)",
-            }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => onAsk(c)}
+        
             style={{
-              all: "unset", cursor: "pointer",
+              cursor: "default",
               fontFamily: "var(--mono)", fontSize: 10.5,
               color: "rgba(240,234,214,0.72)",
               padding: "7px 14px",
@@ -513,7 +508,7 @@ function Masthead({ docName, onAsk }) {
               transition: "all .14s",
               letterSpacing: "0.3px",
             }}
-          >{c}</motion.button>
+          >{c}</motion.div>
         ))}
       </div>
     </motion.div>
