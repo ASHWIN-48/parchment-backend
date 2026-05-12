@@ -26,29 +26,13 @@ class RetrievalService:
     def __init__(self, db):
         self.chunk_repo = ChunkRepository(db)
 
-    def retrieve(
-        self,
-        query: str,
-        session_id: str,
-        top_k: int = 5
-    ) -> list[dict]:
-
+    def retrieve(self, query: str, session_id: str = "default", top_k: int = 5) -> list[dict]:
         query_vec = embed_texts([query])
-
         index, chunk_ids = load_index(session_id)
-
         distances, indices = index.search(query_vec, top_k)
-
-        retrieved_ids = [
-            chunk_ids[i]
-            for i in indices[0]
-            if i < len(chunk_ids)
-        ]
-
+        retrieved_ids = [chunk_ids[i] for i in indices[0] if i < len(chunk_ids)]
         chunks = self.chunk_repo.get_by_ids(retrieved_ids)
-
         return chunks
-    
     def rerank(self, query: str, chunks: list[dict]) -> list[dict]:
         pairs = [[query, chunk["text"]] for chunk in chunks]
         scores = get_cross_encoder().predict(pairs)
@@ -56,16 +40,11 @@ class RetrievalService:
         ranked = sorted(zip(scores, chunks), key=lambda x: x[0], reverse=True)
         return [{"score": float(s), **c} for s, c in ranked]
 
-    def get_answer(self, query: str, session_id: str) -> dict:
+    def get_answer(self, query: str, session_id: str = "default") -> dict:
         try:
             chunks = self.retrieve(query, session_id)
         except RuntimeError as e:
-            return {
-                "answer": str(e),
-                "sources": [],
-                "confidence": 0.0,
-                "tokens_used": 0
-            }
+            return {"answer": str(e), "sources": [], "confidence": 0.0, "tokens_used": 0}
         
         ranked_chunks = self.rerank(query, chunks)
 

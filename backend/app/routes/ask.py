@@ -9,27 +9,10 @@ class QueryRequest(BaseModel):
     question: str
 
 @router.post("/ask")
-async def ask_question(
-    body: QueryRequest,
-    session_id: str = Header(default=None)
-):
-    if not body.question.strip():
-        raise HTTPException(
-            status_code=400,
-            detail="Question cannot be empty"
-        )
-
+async def ask_question(body: QueryRequest, session_id: str = Header(default=None)):
     db = get_db()
-
     retrieval_service = RetrievalService(db)
-
-    print("ASK SESSION:", session_id)
-
-    result = retrieval_service.get_answer(
-        body.question,
-        session_id or "default"
-    )
-
+    result = retrieval_service.get_answer(body.question, session_id=session_id or "default")
     return result
 
 @router.get("/debug")
