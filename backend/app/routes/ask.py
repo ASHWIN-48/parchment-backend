@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
 from app.services.retrieval import RetrievalService
 from app.db import get_db
@@ -9,16 +9,26 @@ class QueryRequest(BaseModel):
     question: str
 
 @router.post("/ask")
-async def ask_question(body: QueryRequest):
+async def ask_question(
+    body: QueryRequest,
+    session_id: str = Header(default=None)
+):
     if not body.question.strip():
-        raise HTTPException(status_code=400, detail="Question cannot be empty")
+        raise HTTPException(
+            status_code=400,
+            detail="Question cannot be empty"
+        )
 
     db = get_db()
+
     retrieval_service = RetrievalService(db)
-    result = retrieval_service.get_answer(body.question)
+
+    result = retrieval_service.get_answer(
+        body.question,
+        session_id or "default"
+    )
 
     return result
-
 
 @router.get("/debug")
 async def debug():

@@ -35,7 +35,11 @@ async def upload_document(
 
     index = build_faiss_index(embeddings)
 
-    save_index(index, chunk_ids)
+    save_index(
+    index,
+    chunk_ids,
+    session_id or "default"
+)
 
     return {
         "document_id": result["document_id"],
