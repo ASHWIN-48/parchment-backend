@@ -62,6 +62,7 @@ def load_index(session_id: str) -> tuple[faiss.Index, list[str]]:
     import tempfile, os
 
     db = get_db()
+    print("LOADING INDEX FOR:", session_id)
 
     doc = db["faiss_store"].find_one({"_id": session_id})
 

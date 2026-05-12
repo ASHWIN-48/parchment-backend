@@ -34,7 +34,7 @@ async def upload_document(
     embeddings = embed_texts(texts)
 
     index = build_faiss_index(embeddings)
-
+    print("UPLOAD SESSION:", session_id)
     save_index(
     index,
     chunk_ids,

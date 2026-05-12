@@ -23,6 +23,8 @@ async def ask_question(
 
     retrieval_service = RetrievalService(db)
 
+    print("ASK SESSION:", session_id)
+
     result = retrieval_service.get_answer(
         body.question,
         session_id or "default"
@@ -37,7 +39,7 @@ async def debug():
     db = get_db()
     
     # check index exists
-    index, chunk_ids = load_index()
+    index, chunk_ids = load_index("default")
     
     # check chunks in mongo
     chunk_repo = ChunkRepository(db)
