@@ -9,7 +9,7 @@ export async function uploadPDF(file, sessionId) {
   const response = await fetch(`${API_BASE}/upload`, {
     method: "POST",
     headers: {
-      session_id: sessionId,
+      "session-id": sessionId,
     },
     body: formData,
   });
@@ -26,7 +26,7 @@ export async function askQuestion(question, sessionId) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      session_id: sessionId,
+      "session-id": sessionId,
     },
     body: JSON.stringify({ question }),
   });
@@ -41,7 +41,7 @@ export async function askQuestion(question, sessionId) {
 export async function getDocuments(sessionId) {
   const response = await fetch(`${API_BASE}/documents`, {
     headers: {
-      session_id: sessionId,
+      "session-id": sessionId,
     },
   });
 
@@ -58,7 +58,7 @@ export async function deleteDocument(documentId, sessionId) {
     {
       method: "DELETE",
       headers: {
-        session_id: sessionId,
+        "session-id": sessionId,
       },
     }
   );
