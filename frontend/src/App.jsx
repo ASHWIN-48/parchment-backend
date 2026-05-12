@@ -18,6 +18,17 @@ import {
   uploadPDF, askQuestion, getDocuments, deleteDocument,
 } from "./api/client";
 
+function getSessionId() {
+  let sessionId = localStorage.getItem("parchment_session");
+
+  if (!sessionId) {
+    sessionId = crypto.randomUUID();
+    localStorage.setItem("parchment_session", sessionId);
+  }
+
+  return sessionId;
+}
+
 /* ═══════════════════════════════════════════
    UTILS
 ═══════════════════════════════════════════ */
@@ -766,7 +777,7 @@ export default function App() {
   async function handleFile(file) {
     setBusy(true); setUpMsg("Uploading…");
     try {
-      const res = await uploadPDF(file);
+      const res = await uploadPDF(file, getSessionId())
       setUpMsg("Vectorising…");
       await new Promise(r => setTimeout(r, 400));
       const fresh = await getDocuments();
@@ -797,8 +808,8 @@ export default function App() {
   }
 
   async function del(id) {
-    await deleteDocument(id).catch(() => {});
-    const fresh = await getDocuments();
+    await deleteDocument(id, getSessionId()).catch(() => {});
+    const fresh = await getDocuments(getSessionId())
     setDocs(fresh);
     if (active?._id === id) { setActive(fresh[0] || null); setHist([]); }
   }
