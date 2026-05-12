@@ -763,7 +763,7 @@ export default function App() {
   const [sideOpen, setSideOpen] = useState(true);
   const endRef = useRef();
   const taRef  = useRef();
-
+  const sessionId = useMemo(() => getSessionId(), []);
   useEffect(() => {
     getDocuments(sessionId)
       .then(d => {
