@@ -765,10 +765,13 @@ export default function App() {
   const taRef  = useRef();
 
   useEffect(() => {
-    getDocuments()
-      .then(d => { setDocs(d); if (d.length) setActive(d[0]); })
+    getDocuments(sessionId)
+      .then(d => {
+        setDocs(d);
+        if (d.length) setActive(d[0]);
+      })
       .catch(() => {});
-  }, []);
+  }, [sessionId]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -780,7 +783,7 @@ export default function App() {
       const res = await uploadPDF(file, getSessionId())
       setUpMsg("Vectorising…");
       await new Promise(r => setTimeout(r, 400));
-      const fresh = await getDocuments();
+      const fresh = await getDocuments(sessionId);
       setDocs(fresh);
       setActive(fresh.find(d => d._id === res.document_id) || fresh[0]);
       setHist([]); setShowUp(false); setUpMsg("");
@@ -797,7 +800,7 @@ export default function App() {
     if (taRef.current) taRef.current.style.height = "auto";
     setHist(h => [...h, { role: "user", text: query }]);
     try {
-      const res = await askQuestion(query, getSessionId())
+      const res = await askQuestion(query, sessionId)
       setHist(h => [...h, { role: "assistant", data: res }]);
     } catch {
       setHist(h => [...h, {
@@ -809,7 +812,7 @@ export default function App() {
 
   async function del(id) {
     await deleteDocument(id, getSessionId()).catch(() => {});
-    const fresh = await getDocuments(getSessionId())
+    const fresh = await getDocuments(sessionId)
     setDocs(fresh);
     if (active?._id === id) { setActive(fresh[0] || null); setHist([]); }
   }
